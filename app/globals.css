@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+/* Subtle vertical wash so the "room" feels lit from the now-playing area. */
+body {
+  background-image: radial-gradient(
+    120% 60% at 50% -10%,
+    rgba(255, 77, 141, 0.10),
+    transparent 60%
+  );
+  background-attachment: fixed;
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3
+      font-medium transition active:scale-[0.98] disabled:opacity-40
+      disabled:pointer-events-none;
+  }
+  .btn-primary {
+    @apply btn bg-signal-500 text-white hover:bg-signal-400 shadow-glow;
+  }
+  .btn-ghost {
+    @apply btn bg-ink-700/70 text-white hover:bg-ink-600;
+  }
+  .field {
+    @apply w-full rounded-xl bg-ink-800 border border-ink-600/60 px-4 py-3
+      text-white placeholder:text-white/40 outline-none
+      focus:border-signal-500/70 focus:ring-2 focus:ring-signal-500/20;
+  }
+  .card {
+    @apply rounded-2xl bg-ink-900/80 border border-white/5 p-4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

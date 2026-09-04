@@ -1,0 +1,6 @@
+{
+  "watch": ["server.ts", "server/**/*.ts", "lib/room-types.ts", "lib/youtube.ts"],
+  "ext": "ts",
+  "ignore": ["app/**", "components/**", ".next/**", "node_modules/**"],
+  "exec": "tsx server.ts"
+}
