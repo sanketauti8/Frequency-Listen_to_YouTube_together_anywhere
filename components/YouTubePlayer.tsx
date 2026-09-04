@@ -17,6 +17,9 @@ export interface YouTubePlayerHandle {
   getCurrentTime: () => number;
   getState: () => number;
   isReady: () => boolean;
+  mute: () => void;
+  unMute: () => void;
+  setVolume: (v: number) => void;
 }
 
 interface Props {
@@ -72,6 +75,9 @@ export const YouTubePlayer = forwardRef<YouTubePlayerHandle, Props>(
       getCurrentTime: () => playerRef.current?.getCurrentTime?.() ?? 0,
       getState: () => playerRef.current?.getPlayerState?.() ?? -1,
       isReady: () => readyRef.current,
+      mute: () => playerRef.current?.mute?.(),
+      unMute: () => playerRef.current?.unMute?.(),
+      setVolume: (v) => playerRef.current?.setVolume?.(Math.min(100, Math.max(0, v))),
     }));
 
     useEffect(() => {

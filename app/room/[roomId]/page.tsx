@@ -31,6 +31,7 @@ export default function RoomPage() {
   const [selfId, setSelfId] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(false);
+  const [muted, setMuted] = useState(false);
   const [playerReady, setPlayerReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -214,6 +215,22 @@ export default function RoomPage() {
     router.push("/");
   };
 
+  // Keep the player's mute state aligned with the user's choice, even after a
+  // new video loads (YouTube can reset mute on some load paths).
+  useEffect(() => {
+    if (!playerReady) return;
+    if (muted) playerRef.current?.mute();
+    else playerRef.current?.unMute();
+  }, [muted, playerReady, room?.videoId]);
+
+  // --- personal mute (local only — never touches playback or other users) ---
+  function toggleMute() {
+    const next = !muted;
+    setMuted(next);
+    if (next) playerRef.current?.mute();
+    else playerRef.current?.unMute();
+  }
+
   // --- audio unlock (mobile autoplay) ---------------------------------------
   function enableAudio() {
     setAudioEnabled(true);
@@ -280,11 +297,25 @@ export default function RoomPage() {
           )}
         </div>
 
-        <PlaybackStatus
-          title={room?.videoTitle ?? null}
-          isPlaying={!!room?.isPlaying}
-          hasVideo={hasVideo}
-        />
+        <div className="flex items-center justify-between gap-3">
+          <PlaybackStatus
+            title={room?.videoTitle ?? null}
+            isPlaying={!!room?.isPlaying}
+            hasVideo={hasVideo}
+          />
+          {hasVideo && audioEnabled && (
+            <button
+              onClick={toggleMute}
+              aria-pressed={muted}
+              title={muted ? "Unmute my audio" : "Mute my audio"}
+              className={`btn-ghost shrink-0 px-3 ${
+                muted ? "text-signal-400" : "text-white/70"
+              }`}
+            >
+              {muted ? "🔇 Muted" : "🔊 Mute"}
+            </button>
+          )}
+        </div>
       </section>
 
       {isHost && (

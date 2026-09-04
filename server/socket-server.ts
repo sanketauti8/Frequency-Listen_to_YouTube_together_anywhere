@@ -130,6 +130,7 @@ export function initSocketServer(httpServer: HTTPServer): IOServer {
           updatedAt: executeAt,
         });
         broadcastScheduled(io, roomId, "PLAY", room.videoId, safePos(position), executeAt);
+        emitState(io, roomId);
       });
     });
 
@@ -142,6 +143,7 @@ export function initSocketServer(httpServer: HTTPServer): IOServer {
           updatedAt: Date.now(),
         });
         broadcastScheduled(io, roomId, "PAUSE", room.videoId, safePos(position));
+        emitState(io, roomId);
       });
     });
 
@@ -155,6 +157,7 @@ export function initSocketServer(httpServer: HTTPServer): IOServer {
           updatedAt: executeAt,
         });
         broadcastScheduled(io, roomId, "SEEK", room.videoId, safePos(position), executeAt);
+        emitState(io, roomId);
       });
     });
 
@@ -202,6 +205,12 @@ function withHost(
   const room = roomStore.getRoom(roomId);
   if (!room) return;
   fn(roomId, room);
+}
+
+/** Push the current authoritative room state to everyone in the room. */
+function emitState(io: IOServer, roomId: string) {
+  const room = roomStore.getRoom(roomId);
+  if (room) io.to(roomId).emit("room:state", room);
 }
 
 /** Emit a scheduled media command to everyone in the room (host included). */
